@@ -662,7 +662,8 @@ def scheduler(broker: Broker = None):
                         if settings.USE_TZ
                         else next_run.datetime.replace(tzinfo=None)
                     )
-                    s.repeats += -1
+                    if s.repeats > 0:
+                        s.repeats -= 1
                 # send it to the cluster
                 scheduled_broker = broker
                 try:
