@@ -666,6 +666,17 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "pyupgrade"
+version = "2.32.1"
+description = "A tool to automatically upgrade syntax for newer versions."
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+tokenize-rt = ">=3.2.0"
+
+[[package]]
 name = "redis"
 version = "4.3.3"
 description = "Python client for Redis database and key-value store"
@@ -892,6 +903,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "tokenize-rt"
+version = "4.2.1"
+description = "A wrapper around the stdlib `tokenize` which roundtrips."
+category = "dev"
+optional = false
+python-versions = ">=3.6.1"
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -970,7 +989,7 @@ testing = ["django-redis", "croniter", "hiredis", "psutil", "iron-mq", "boto3", 
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8, <4"
-content-hash = "b33a81d8f8db68fb3a09a5c32bf77637e09635978ecb5b3b677b0fbb052606c9"
+content-hash = "a0f2bb2c8bcd3d55438008d3a65491610cb0f0c39f175475ddd9ba33bb7a1c20"
 
 [metadata.files]
 alabaster = [
@@ -1460,6 +1479,10 @@ pytz = [
     {file = "pytz-2022.1-py2.py3-none-any.whl", hash = "sha256:e68985985296d9a66a881eb3193b0906246245294a881e7c8afe623866ac6a5c"},
     {file = "pytz-2022.1.tar.gz", hash = "sha256:1e760e2fe6a8163bc0b3d9a19c4f84342afa0a2affebfaa84b01b978a02ecaa7"},
 ]
+pyupgrade = [
+    {file = "pyupgrade-2.32.1-py2.py3-none-any.whl", hash = "sha256:d874f34870abadd7536c89678f9811076d5df93c13620f90a125355a2d31fa91"},
+    {file = "pyupgrade-2.32.1.tar.gz", hash = "sha256:11e2c3e4e2e53a61b2d8852ed154ea5683887b6ac42561622ca8d89c94fd951a"},
+]
 redis = [
     {file = "redis-4.3.3-py3-none-any.whl", hash = "sha256:f57f8df5d238a8ecf92f499b6b21467bfee6c13d89953c27edf1e2bc673622e7"},
     {file = "redis-4.3.3.tar.gz", hash = "sha256:2f7a57cf4af15cd543c4394bcbe2b9148db2606a37edba755368836e3a1d053e"},
@@ -1521,6 +1544,10 @@ sqlparse = [
 ]
 termcolor = [
     {file = "termcolor-1.1.0.tar.gz", hash = "sha256:1d6d69ce66211143803fbc56652b41d73b4a400a2891d7bf7a1cdf4c02de613b"},
+]
+tokenize-rt = [
+    {file = "tokenize_rt-4.2.1-py2.py3-none-any.whl", hash = "sha256:08a27fa032a81cf45e8858d0ac706004fcd523e8463415ddf1442be38e204ea8"},
+    {file = "tokenize_rt-4.2.1.tar.gz", hash = "sha256:0d4f69026fed520f8a1e0103aa36c406ef4661417f20ca643f913e33531b3b94"},
 ]
 tomli = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},

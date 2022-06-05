@@ -3,11 +3,15 @@
 - Removed CodeCov coverage publishing for tests, as it is not configured
 - Added CodeQL scanning for the forked main ref
 - Updated Github actions versions
-- Update Github actions to use poetry caching
+- Updated Github actions to use poetry caching
 - Modernized pyproject.toml to resolve build issues
 - Added extras to pyproject.toml for each broker type, allowing easy installation of optional packages
 - Removed upper version bound on all dependencies
-- Resolves warning about django baseconv module being removed
+- Resolved warning about django baseconv module being removed
+- Dropped support for Python 3.7
+- Removed Python 3.7 testing
+- Dropped support for Django 2.2
+- Removed Django 2.2 testing
 
 ## [Unreleased](https://github.com/koed00/django-q/tree/HEAD)
 
