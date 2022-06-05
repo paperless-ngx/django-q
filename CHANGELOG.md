@@ -12,6 +12,9 @@
 - Removed Python 3.7 testing
 - Dropped support for Django 2.2
 - Removed Django 2.2 testing
+- Added testing for Python 3.10
+
+Full Changes: https://github.com/Koed00/django-q/compare/master...paperless-ngx:paperless-main
 
 ## [Unreleased](https://github.com/koed00/django-q/tree/HEAD)
 
