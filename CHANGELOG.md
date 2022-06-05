@@ -7,7 +7,7 @@
 - Modernized pyproject.toml to resolve build issues
 - Added extras to pyproject.toml for each broker type, allowing easy installation of optional packages
 - Removed upper version bound on all dependencies
-- 
+- Resolves warning about django baseconv module being removed
 
 ## [Unreleased](https://github.com/koed00/django-q/tree/HEAD)
 
