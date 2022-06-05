@@ -4,6 +4,10 @@
 - Added CodeQL scanning for the forked main ref
 - Updated Github actions versions
 - Update Github actions to use poetry caching
+- Modernized pyproject.toml to resolve build issues
+- Added extras to pyproject.toml for each broker type, allowing easy installation of optional packages
+- Removed upper version bound on all dependencies
+- 
 
 ## [Unreleased](https://github.com/koed00/django-q/tree/HEAD)
 
