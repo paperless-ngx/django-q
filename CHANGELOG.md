@@ -1,5 +1,10 @@
 # Changelog
 
+- Removed CodeCov coverage publishing for tests, as it is not configured
+- Added CodeQL scanning for the forked main ref
+- Updated Github actions versions
+- Update Github actions to use poetry caching
+
 ## [Unreleased](https://github.com/koed00/django-q/tree/HEAD)
 
 [Full Changelog](https://github.com/koed00/django-q/compare/v1.3.9...HEAD)
