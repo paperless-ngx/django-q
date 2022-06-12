@@ -9,6 +9,7 @@
   - [Sub-classing Process](#sub-classing-process)
   - [Better Process Naming](#better-process-naming)
   - [File Organization](#file-organization)
+  - [Useful PRs](#useful-prs)
 
 # Ideas
 
@@ -91,3 +92,10 @@ an idea of how many times a task has been re-incarnated or recycled)
 
 The `cluster.py` file contains a lot more than Cluster.  Simplify the file by moving other classes to their own
 files and common functionality to an appropriate file as well.
+
+## Useful PRs
+
+- https://github.com/Koed00/django-q/pull/603
+- https://github.com/Koed00/django-q/pull/604
+- https://github.com/Koed00/django-q/pull/605
+- https://github.com/Koed00/django-q/pull/423
