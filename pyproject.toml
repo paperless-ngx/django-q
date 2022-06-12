@@ -64,6 +64,7 @@ pytest-django = "*"
 pytest-xdist = "*"
 pytest-sugar = "*"
 Sphinx = "*"
+coverage = {version = "*", extras = ["toml"]}
 pytest-cov = "*"
 black = "*"
 isort = "*"
@@ -80,6 +81,17 @@ iron-mq = ["iron-mq"]
 mongo = ["pymongo"]
 sqs = ["boto3"]
 cron = ["croniter"]
+
+
+[tool.pytest.ini_options]
+addopts = "--pythonwarnings=all --cov --cov-report=html --numprocesses auto --quiet"
+
+
+[tool.coverage.run]
+omit = [
+  "*/tests/*"
+]
+
 
 [tool.isort]
 profile = "black"
