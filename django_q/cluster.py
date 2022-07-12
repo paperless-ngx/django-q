@@ -55,11 +55,13 @@ class ScheduleThread(threading.Thread):
         self.stopped = event
 
     def run(self):
-        # Call once on thread start
-        scheduler(self.broker)
-        while not self.stopped.wait(60.0):
-            # Call thereafter every ~60s
+        # Only do a loop if configured to enable schedules
+        if Conf.SCHEDULER:
+            # Call once at startup
             scheduler(self.broker)
+            while not self.stopped.wait(60.0):
+                # Call thereafter every ~60s
+                scheduler(self.broker)
 
 
 class Cluster:
