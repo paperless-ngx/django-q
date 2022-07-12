@@ -4,12 +4,10 @@
     - [Cons](#cons)
   - [Simplify Human Hash](#simplify-human-hash)
   - [Event Driven vs Polling](#event-driven-vs-polling)
-  - [Add .editorconfig](#add-editorconfig)
   - [Add .pre-commit-config.yaml](#add-pre-commit-configyaml)
   - [Sub-classing Process](#sub-classing-process)
   - [Better Process Naming](#better-process-naming)
   - [File Organization](#file-organization)
-  - [Useful PRs](#useful-prs)
 
 # Ideas
 
@@ -64,10 +62,6 @@ task in the future, instead of polling continuously?  Set the future timeout in 
 This would be a very large change in the architecture, but if it (or even potions of it) are possible, it would be
 a much better solution than consistently polling and eating up cycles.
 
-## Add .editorconfig
-
-Pretty easy, adding an .editorconfig file will help keep the styling consistent across multiple authors.
-
 ## Add .pre-commit-config.yaml
 
 Along the same idea as above, adding a pre-commit configuration will help enforce styling and formatting,
@@ -93,9 +87,3 @@ an idea of how many times a task has been re-incarnated or recycled)
 The `cluster.py` file contains a lot more than Cluster.  Simplify the file by moving other classes to their own
 files and common functionality to an appropriate file as well.
 
-## Useful PRs
-
-- https://github.com/Koed00/django-q/pull/603
-- https://github.com/Koed00/django-q/pull/604
-- https://github.com/Koed00/django-q/pull/605
-- https://github.com/Koed00/django-q/pull/423
