@@ -15,6 +15,7 @@ from django_q.models import Schedule, Task
 from django_q.queues import Queue
 from django_q.signals import pre_enqueue
 from django_q.signing import SignedPackage
+from django_q.cluster import WorkerStatus
 
 
 def async_task(func, *args, **kwargs):
@@ -762,7 +763,7 @@ def _sync(pack):
     task = SignedPackage.loads(pack)
     task_queue.put(task)
     task_queue.put("STOP")
-    worker(task_queue, result_queue, Value("f", -1))
+    worker(task_queue, result_queue, Value("I", WorkerStatus.IDLE.value))
     result_queue.put("STOP")
     monitor(result_queue)
     task_queue.close()
