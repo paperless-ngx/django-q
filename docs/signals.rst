@@ -50,5 +50,3 @@ signal::
     @receiver(post_execute)
     def my_post_execute_callback(sender, task, **kwargs):
         print(f"Task {task['name']} was executed with result {task['result']}")
-
-

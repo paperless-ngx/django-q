@@ -1,14 +1,14 @@
 categories:
-  - 
+  -
     label: breaking
     title: Breaking
-  - 
+  -
     label: feature
     title: New
-  - 
+  -
     label: bug
     title: "Bug Fixes"
-  - 
+  -
     label: dependencies
     title: "Dependency Updates"
   -
@@ -19,17 +19,17 @@ tag-template: v$NEXT_PATCH_VERSION
 template: |
     # Changes
     $CHANGES
-version-resolver: 
-  major: 
-    labels: 
+version-resolver:
+  major:
+    labels:
       - breaking
       - major
-  minor: 
-    labels: 
+  minor:
+    labels:
       - feature
       - minor
-  patch: 
-    labels: 
+  patch:
+    labels:
       - bug
       - dependencies
       - security

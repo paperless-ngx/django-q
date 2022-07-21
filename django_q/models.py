@@ -107,7 +107,7 @@ class Task(models.Model):
 
 class SuccessManager(models.Manager):
     def get_queryset(self):
-        return super(SuccessManager, self).get_queryset().filter(success=True)
+        return super().get_queryset().filter(success=True)
 
 
 class Success(Task):
@@ -123,7 +123,7 @@ class Success(Task):
 
 class FailureManager(models.Manager):
     def get_queryset(self):
-        return super(FailureManager, self).get_queryset().filter(success=False)
+        return super().get_queryset().filter(success=False)
 
 
 class Failure(Task):

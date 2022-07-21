@@ -12,7 +12,7 @@ except ImportError:
 
 class Redis(Broker):
     def __init__(self, list_key: str = Conf.PREFIX):
-        super(Redis, self).__init__(list_key=f"django_q:{list_key}:q")
+        super().__init__(list_key=f"django_q:{list_key}:q")
 
     def enqueue(self, task):
         return self.connection.rpush(self.list_key, task)

@@ -10,11 +10,11 @@ QUEUE_DOES_NOT_EXIST = "AWS.SimpleQueueService.NonExistentQueue"
 class Sqs(Broker):
     def __init__(self, list_key: str = Conf.PREFIX):
         self.sqs = None
-        super(Sqs, self).__init__(list_key)
+        super().__init__(list_key)
         self.queue = self.get_queue()
 
     def __setstate__(self, state):
-        super(Sqs, self).__setstate__(state)
+        super().__setstate__(state)
         self.sqs = None
         self.queue = self.get_queue()
 

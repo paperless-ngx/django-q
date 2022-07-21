@@ -51,4 +51,3 @@ Contents:
 
 * :ref:`genindex`
 * :ref:`search`
-

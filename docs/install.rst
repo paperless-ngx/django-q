@@ -156,6 +156,3 @@ At the moment this means we support the 2.2.x and 3.1.x releases.
 
 Since we are now no longer supporting Python 2, we can also not support older versions of Django that do not support Python >= 3.6
 For this you can always use older releases, but they are no longer maintained.
-
-
-

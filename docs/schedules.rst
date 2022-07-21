@@ -125,7 +125,7 @@ Reference
     :param str cluster: optional cluster name. Task will be executed only on a cluster with a matching :ref:`name`.
     :param dict q_options: options passed to async_task for this schedule
     :param kwargs: optional keyword arguments for the scheduled function.
-    
+
     .. note::
 
         q_options does not accept the 'broker' key with a broker instance but accepts a 'broker_name' key instead. This can be used to specify the broker connection name to assign the task. If a broker with the specified name does not exist or is not running at the moment of placing the task in queue it fallbacks to the random broker/queue that handled the schedule.
@@ -183,7 +183,7 @@ Reference
     When set to -1, this will keep counting down.
 
     .. py:attribute:: cluster
-    
+
     Task will be executed only on a cluster with a matching :ref:`name`.
 
     .. py:attribute:: next_run
@@ -245,5 +245,3 @@ Reference
     .. py:attribute:: CRON
 
     `'C'` uses the optional `croniter` package to determine a schedule based on a cron expression.
-
-

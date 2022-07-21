@@ -144,6 +144,3 @@ Reference
     .. py:attribute:: has_stopped
 
     Bool. Tells you if the cluster has finished the stop procedure
-
-
-

@@ -557,7 +557,7 @@ def test_update_failed(broker):
 def test_acknowledge_failure_override():
     class VerifyAckMockBroker(Broker):
         def __init__(self, *args, **kwargs):
-            super(VerifyAckMockBroker, self).__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
             self.acknowledgements = {}
 
         def acknowledge(self, task_id):

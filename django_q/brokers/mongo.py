@@ -16,11 +16,11 @@ def _timeout():
 
 class Mongo(Broker):
     def __init__(self, list_key=Conf.PREFIX):
-        super(Mongo, self).__init__(list_key)
+        super().__init__(list_key)
         self.collection = self.get_collection()
 
     def __setstate__(self, state):
-        super(Mongo, self).__setstate__(state)
+        super().__setstate__(state)
         self.collection = self.get_collection()
 
     @staticmethod

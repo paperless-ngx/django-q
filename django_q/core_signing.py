@@ -6,20 +6,17 @@ from django.core.signing import BadSignature, JSONSerializer, SignatureExpired
 from django.core.signing import Signer as Sgnr
 from django.core.signing import TimestampSigner as TsS
 from django.core.signing import b64_decode, dumps
+
 try:
     from django.core.signing import b62_decode
 except ImportError:
     from django.utils.baseconv import base62
+
     b62_decode = base62.decode
 from django.utils.crypto import constant_time_compare
 from django.utils.encoding import force_bytes, force_str
 
 dumps = dumps
-
-"""
-The loads function is the same as the `django.core.signing.loads` function
-The difference is that `this` loads function calls `TimestampSigner` and `Signer`
-"""
 
 
 def loads(
@@ -33,6 +30,10 @@ def loads(
     Reverse of dumps(), raise BadSignature if signature fails.
 
     The serializer is expected to accept a bytestring.
+
+    The loads function is the same as the `django.core.signing.loads` function
+    The difference is that `this` loads function calls `TimestampSigner` and `Signer`
+
     """
     # TimestampSigner.unsign() returns str but base64 and zlib compression
     # operate on bytes.
@@ -59,19 +60,19 @@ class Signer(Sgnr):
         raise BadSignature('Signature "%s" does not match' % sig)
 
 
-"""
-TimestampSigner is also the same as `django.core.signing.TimestampSigner` but is
-calling `this` Signer.
-"""
-
-
 class TimestampSigner(Signer, TsS):
+
+    """
+    TimestampSigner is also the same as `django.core.signing.TimestampSigner` but is
+    calling `this` Signer.
+    """
+
     def unsign(self, value, max_age=None):
         """
         Retrieve original value and check it wasn't signed more
         than max_age seconds ago.
         """
-        result = super(TimestampSigner, self).unsign(value)
+        result = super().unsign(value)
         value, timestamp = result.rsplit(self.sep, 1)
         timestamp = b62_decode(timestamp)
         if max_age is not None:
@@ -80,5 +81,5 @@ class TimestampSigner(Signer, TsS):
             # Check timestamp is not older than max_age
             age = time.time() - timestamp
             if age > max_age:
-                raise SignatureExpired("Signature age %s > %s seconds" % (age, max_age))
+                raise SignatureExpired(f"Signature age {age} > {max_age} seconds")
         return value

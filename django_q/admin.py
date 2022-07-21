@@ -18,7 +18,7 @@ class TaskAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         """Only show successes."""
-        qs = super(TaskAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         return qs.filter(success=True)
 
     search_fields = ("name", "func", "group")
@@ -95,7 +95,7 @@ class QueueAdmin(admin.ModelAdmin):
         obj.delete(using=Conf.ORM)
 
     def get_queryset(self, request):
-        return super(QueueAdmin, self).get_queryset(request).using(Conf.ORM)
+        return super().get_queryset(request).using(Conf.ORM)
 
     def has_add_permission(self, request):
         """Don't allow adds."""

@@ -48,27 +48,22 @@ class Queue(multiprocessing.queues.Queue):
     """
 
     def __init__(self, *args, **kwargs):
-        if sys.version_info < (3, 0):
-            super(Queue, self).__init__(*args, **kwargs)
-        else:
-            super(Queue, self).__init__(
-                *args, ctx=multiprocessing.get_context(), **kwargs
-            )
+        super().__init__(*args, ctx=multiprocessing.get_context(), **kwargs)
         self.size = SharedCounter(0)
 
     def __getstate__(self):
-        return super(Queue, self).__getstate__() + (self.size,)
+        return super().__getstate__() + (self.size,)
 
     def __setstate__(self, state):
-        super(Queue, self).__setstate__(state[:-1])
+        super().__setstate__(state[:-1])
         self.size = state[-1]
 
     def put(self, *args, **kwargs):
-        super(Queue, self).put(*args, **kwargs)
+        super().put(*args, **kwargs)
         self.size.increment(1)
 
     def get(self, *args, **kwargs):
-        x = super(Queue, self).get(*args, **kwargs)
+        x = super().get(*args, **kwargs)
         self.size.increment(-1)
         return x
 

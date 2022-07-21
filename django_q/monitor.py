@@ -26,7 +26,7 @@ except ImportError:
 def get_process_mb(pid):
     try:
         process = psutil.Process(pid)
-        mb_used = round(process.memory_info().rss / 1024 ** 2, 2)
+        mb_used = round(process.memory_info().rss / 1024**2, 2)
     except psutil.NoSuchProcess:
         mb_used = "NO_PROCESS_FOUND"
     return mb_used
@@ -372,7 +372,7 @@ def memory(run_once=False, workers=False, broker=None):
                 )
                 # memory available (MB)
                 memory_available = round(
-                    psutil.virtual_memory().available / 1024 ** 2, 2
+                    psutil.virtual_memory().available / 1024**2, 2
                 )
                 if memory_available_percentage < MEMORY_AVAILABLE_LOWEST_PERCENTAGE:
                     MEMORY_AVAILABLE_LOWEST_PERCENTAGE = memory_available_percentage
@@ -396,7 +396,7 @@ def memory(run_once=False, workers=False, broker=None):
                 print(
                     term.move(row, 4 * col_width)
                     + term.center(
-                        round(psutil.virtual_memory().total / 1024 ** 2, 2),
+                        round(psutil.virtual_memory().total / 1024**2, 2),
                         width=col_width - 1,
                     )
                 )
@@ -437,7 +437,7 @@ def memory(run_once=False, workers=False, broker=None):
                         term.move(row, (worker_num + 1) * col_width)
                         + term.black_on_cyan(
                             term.center(
-                                "Worker #{} (MB)".format(worker_num + 1),
+                                f"Worker #{worker_num + 1} (MB)",
                                 width=col_width - 1,
                             )
                         )

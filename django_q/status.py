@@ -31,7 +31,7 @@ class Stat(Status):
     """Status object for Cluster monitoring."""
 
     def __init__(self, sentinel):
-        super(Stat, self).__init__(
+        super().__init__(
             sentinel.parent_pid or sentinel.pid, cluster_id=sentinel.cluster_id
         )
         self.broker = sentinel.broker or get_broker()

@@ -106,4 +106,3 @@ Reference
     get the length of the arguments list
 
         :return int: length of the argument list
-

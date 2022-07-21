@@ -137,8 +137,8 @@ class Conf:
     # Verify if retry and timeout settings are correct
     if not TIMEOUT or (TIMEOUT > RETRY):
         warn(
-            """Retry and timeout are misconfigured. Set retry larger than timeout, 
-        failure to do so will cause the tasks to be retriggered before completion. 
+            """Retry and timeout are misconfigured. Set retry larger than timeout,
+        failure to do so will cause the tasks to be retriggered before completion.
         See https://django-q.readthedocs.io/en/latest/configure.html#retry for details."""
         )
 
@@ -186,11 +186,11 @@ class Conf:
         QSIZE = False
 
     # Getting the signal names
-    SIGNAL_NAMES = dict(
-        (getattr(signal, n), n)
+    SIGNAL_NAMES = {
+        getattr(signal, n): n
         for n in dir(signal)
         if n.startswith("SIG") and "_" not in n
-    )
+    }
 
     # Translators: Cluster status descriptions
     STARTING = _("Starting")

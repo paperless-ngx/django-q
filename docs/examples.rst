@@ -338,7 +338,7 @@ Requires cache to be enabled. Save file in your Django project's root directory 
 
     class HealthCheckServer(BaseHTTPRequestHandler):
         def do_GET(self):
-            
+
             # Count the clusters and their status
             happy_clusters = 0
             total_clusters = 0
@@ -384,12 +384,9 @@ Requires cache to be enabled. Save file in your Django project's root directory 
 
         webServer.server_close()
         print("Server stopped.")
-        
-        
-        
+
+
+
 .. note::
 
     If you have an example you want to share, please submit a pull request on `github <https://github.com/Koed00/django-q/>`__.
-
-
-
