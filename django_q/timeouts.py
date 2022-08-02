@@ -16,6 +16,10 @@ class BaseDeathPenalty:
     """Base class to setup job timeouts."""
 
     def __init__(self, timeout, exception=JobTimeoutException, **kwargs):
+        # If signal.alarm timeout is 0, no alarm will be scheduled
+        # by signal.alarm
+        if timeout is None:
+            timeout = 0
         self._timeout = timeout
         self._exception = exception
 
