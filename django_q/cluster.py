@@ -14,6 +14,12 @@ from time import sleep
 # External
 import arrow
 
+try:
+    from setproctitle import setproctitle as setprocname
+except ImportError:
+    def setprocname(*args, **kwargs):  # noqa
+        pass
+
 # Django
 from django import core, db
 from django.apps.registry import apps
@@ -152,6 +158,7 @@ class Sentinel:
         timeout=Conf.TIMEOUT,
         start=True,
     ):
+        setprocname("Q Sentinel")
         # Make sure we catch signals for the pool
         signal.signal(signal.SIGINT, signal.SIG_IGN)
         signal.signal(signal.SIGTERM, signal.SIG_DFL)
@@ -346,6 +353,7 @@ def pusher(task_queue: Queue, event: Event, broker: Broker = None):
     :type task_queue: multiprocessing.Queue
     :type event: multiprocessing.Event
     """
+    setprocname("Q Task Pusher")
     if not broker:
         broker = get_broker()
     logger.info(_(f"{current_process().name} pushing tasks at {current_process().pid}"))
@@ -381,6 +389,7 @@ def monitor(result_queue: Queue, broker: Broker = None):
     :type broker: brokers.Broker
     :type result_queue: multiprocessing.Queue
     """
+    setprocname("Q Result Monitor")
     if not broker:
         broker = get_broker()
     name = current_process().name
@@ -417,6 +426,7 @@ def worker(
     :type result_queue: multiprocessing.Queue
     :type timer: multiprocessing.Value wrapping an unsigned int
     """
+    setprocname("Q Worker")
     name = current_process().name
     logger.info(_(f"{name} ready for work at {current_process().pid}"))
     task_count = 0
