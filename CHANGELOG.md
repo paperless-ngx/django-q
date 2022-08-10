@@ -13,6 +13,13 @@
 - Dropped support for Django 2.2
 - Removed Django 2.2 testing
 - Added testing for Python 3.10
+- Applied the following parent fork PRs:
+  - https://github.com/Koed00/django-q/pull/603
+  - https://github.com/Koed00/django-q/pull/604
+  - https://github.com/Koed00/django-q/pull/605
+  - https://github.com/Koed00/django-q/pull/423
+  - https://github.com/Koed00/django-q/pull/672
+  - https://github.com/Koed00/django-q/pull/659
 
 Full Changes: https://github.com/Koed00/django-q/compare/master...paperless-ngx:paperless-main
 
