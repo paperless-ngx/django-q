@@ -12,6 +12,7 @@ from datetime import datetime
 from multiprocessing import Event, Process, Value, current_process
 import multiprocessing.connection
 from time import sleep
+import threading
 
 # External
 import arrow
@@ -64,6 +65,21 @@ class WorkerStatus(enum.IntEnum):
     RECYCLE = 3
     TIMEOUT = 4
     STARTING = 5
+
+class ScheduleThread(threading.Thread):
+    def __init__(self, broker: Broker, event: threading.Event):
+        threading.Thread.__init__(self)
+        self.broker = broker
+        self.stopped = event
+
+    def run(self):
+        # Only do a loop if configured to enable schedules
+        if Conf.SCHEDULER:
+            # Call once at startup
+            scheduler(self.broker)
+            while not self.stopped.wait(60.0):
+                # Call thereafter every ~60s
+                scheduler(self.broker)
 
 
 class Cluster:
@@ -183,6 +199,8 @@ class Sentinel:
         self.event_out = Event()
         self.monitor = None
         self.pusher = None
+        self.scheduler_stop = threading.Event()
+        self.scheduler = ScheduleThread(self.broker, self.scheduler_stop)
         if start:
             self.start()
 
@@ -267,6 +285,8 @@ class Sentinel:
         # spawn auxiliary
         self.monitor = self.spawn_monitor()
         self.pusher = self.spawn_pusher()
+        if Conf.SCHEDULER:
+            self.scheduler.start()
         # set worker cpu affinity if needed
         if psutil and Conf.CPU_AFFINITY:
             set_cpu_affinity(Conf.CPU_AFFINITY, [w.pid for w in self.pool])
@@ -301,9 +321,9 @@ class Sentinel:
                 self.reincarnate(sentinels[process_sentinel])
             # Call scheduler once a minute (or so)
             counter += cycle
-            if counter >= 30 and Conf.SCHEDULER:
-                counter = 0
-                scheduler(broker=self.broker)
+            #if counter >= 30 and Conf.SCHEDULER:
+                #counter = 0
+                #scheduler(broker=self.broker)
             # Save current status
             Stat(self).save()
             sleep(cycle)
@@ -319,6 +339,9 @@ class Sentinel:
         while self.pusher.is_alive():
             sleep(0.1)
             Stat(self).save()
+        if Conf.SCHEDULER:
+            self.scheduler_stop.set()
+            self.scheduler.join()
         # Put poison pills in the queue
         for __ in range(len(self.pool)):
             self.task_queue.put("STOP")
