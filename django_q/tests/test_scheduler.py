@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.utils.timezone import is_naive
 
 from django_q.brokers import Broker, get_broker
-from django_q.cluster import monitor, pusher, scheduler, worker, localtime
+from django_q.cluster import WorkerStatus, localtime, monitor, pusher, scheduler, worker
 from django_q.conf import Conf
 from django_q.queues import Queue
 from django_q.tasks import Schedule, fetch
@@ -118,7 +118,7 @@ def test_scheduler(broker, monkeypatch):
     task_queue.put("STOP")
     # let a worker handle them
     result_queue = Queue()
-    worker(task_queue, result_queue, Value("b", -1))
+    worker(task_queue, result_queue, Value("I", WorkerStatus.IDLE.value))
     assert result_queue.qsize() == 1
     result_queue.put("STOP")
     # store the results

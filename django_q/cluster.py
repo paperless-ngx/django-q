@@ -1,5 +1,6 @@
 # Standard
 import ast
+import enum
 import inspect
 import pydoc
 import signal
@@ -52,6 +53,15 @@ from django_q.queues import Queue
 from django_q.signals import post_execute, pre_execute
 from django_q.signing import BadSignature, SignedPackage
 from django_q.status import Stat, Status
+from django_q.timeouts import JobTimeoutException, UnixSignalDeathPenalty
+
+
+class WorkerStatus(enum.IntEnum):
+    IDLE = 1
+    BUSY = 2
+    RECYCLE = 3
+    TIMEOUT = 4
+    STARTING = 5
 
 
 class Cluster:
@@ -199,7 +209,7 @@ class Sentinel:
         p.daemon = True
         if target == worker:
             p.daemon = Conf.DAEMONIZE_WORKERS
-            p.timer = args[2]
+            p.status = args[2]
             self.pool.append(p)
         p.start()
         return p
@@ -209,7 +219,7 @@ class Sentinel:
 
     def spawn_worker(self):
         self.spawn_process(
-            worker, self.task_queue, self.result_queue, Value("f", -1), self.timeout
+            worker, self.task_queue, self.result_queue, Value('I', WorkerStatus.IDLE.value), self.timeout
         )
 
     def spawn_monitor(self) -> Process:
@@ -232,11 +242,11 @@ class Sentinel:
         else:
             self.pool.remove(process)
             self.spawn_worker()
-            if process.timer.value == 0:
+            if process.status.value == WorkerStatus.TIMEOUT.value:
                 # only need to terminate on timeout, otherwise we risk destabilizing the queues
                 process.terminate()
                 logger.warning(_(f"reincarnated worker {process.name} after timeout"))
-            elif int(process.timer.value) == -2:
+            elif process.status.value == WorkerStatus.RECYCLE.value:
                 logger.info(_(f"recycled worker {process.name}"))
             else:
                 logger.error(_(f"reincarnated worker {process.name} after death"))
@@ -274,14 +284,11 @@ class Sentinel:
         while not self.stop_event.is_set() or not counter:
             # Check Workers
             for p in self.pool:
-                with p.timer.get_lock():
+                with p.status.get_lock():
                     # Are you alive?
-                    if not p.is_alive() or p.timer.value == 0:
+                    if not p.is_alive() or p.status.value in {WorkerStatus.TIMEOUT.value, WorkerStatus.RECYCLE.value}:
                         self.reincarnate(p)
                         continue
-                    # Decrement timer if work is being done
-                    if p.timer.value > 0:
-                        p.timer.value -= cycle
             # Check Monitor
             if not self.monitor.is_alive():
                 self.reincarnate(self.monitor)
@@ -410,25 +417,25 @@ def monitor(result_queue: Queue, broker: Broker = None):
 
 
 def worker(
-    task_queue: Queue, result_queue: Queue, timer: Value, timeout: int = Conf.TIMEOUT
+    task_queue: Queue, result_queue: Queue, status: Value, timeout: int = Conf.TIMEOUT
 ):
     """
     Takes a task from the task queue, tries to execute it and puts the result back in the result queue
     :param timeout: number of seconds wait for a worker to finish.
     :type task_queue: multiprocessing.Queue
     :type result_queue: multiprocessing.Queue
-    :type timer: multiprocessing.Value
+    :type timer: multiprocessing.Value wrapping an unsigned int
     """
     setprocname("Q Worker")
     name = current_process().name
     logger.info(_(f"{name} ready for work at {current_process().pid}"))
     task_count = 0
-    if timeout is None:
-        timeout = -1
     # Start reading the task queue
     for task in iter(task_queue.get, "STOP"):
         result = None
-        timer.value = -1  # Idle
+        timed_out = False
+        # Got a task package, but have not yet called the work
+        status.value = WorkerStatus.STARTING.value
         task_count += 1
         # Get the function from the task
         logger.info(_(f'{name} processing [{task["name"]}]'))
@@ -437,31 +444,42 @@ def worker(
         if not callable(task["func"]):
             f = pydoc.locate(f)
         close_old_django_connections()
-        timer_value = task.pop("timeout", timeout)
+        timeout = task.pop("timeout", timeout)
         # signal execution
         pre_execute.send(sender="django_q", func=f, task=task)
         # execute the payload
-        timer.value = timer_value  # Busy
+        status.value = WorkerStatus.BUSY.value
         try:
-            res = f(*task["args"], **task["kwargs"])
-            result = (res, True)
+            with UnixSignalDeathPenalty(timeout=timeout):
+                res = f(*task["args"], **task["kwargs"])
+                result = (res, True)
         except Exception as e:
+            if isinstance(e, JobTimeoutException):
+                timed_out = True
             result = (f"{e} : {traceback.format_exc()}", False)
             if error_reporter:
                 error_reporter.report()
             if task.get("sync", False):
                 raise
-        with timer.get_lock():
-            # Process result
-            task["result"] = result[0]
-            task["success"] = result[1]
-            task["stopped"] = timezone.now()
-            result_queue.put(task)
-            timer.value = -1  # Idle
-            # Recycle
-            if task_count == Conf.RECYCLE or rss_check():
-                timer.value = -2  # Recycled
-                break
+        finally:
+            with status.get_lock():
+                # Process result
+                if result is None:
+                    result = (None, False)
+                task["result"] = result[0]
+                task["success"] = result[1]
+                task["stopped"] = timezone.now()
+                result_queue.put(task)
+
+                if timed_out:
+                    status.value = WorkerStatus.TIMEOUT.value
+                    break
+                elif task_count == Conf.RECYCLE or rss_check():
+                    status.value = WorkerStatus.RECYCLE.value
+                    break
+                else:
+                    status.value = WorkerStatus.IDLE.value
+
     logger.info(_(f"{name} stopped doing work"))
 
 
