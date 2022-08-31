@@ -443,17 +443,10 @@ def worker(
             with UnixSignalDeathPenalty(timeout=timeout):
                 res = f(*task["args"], **task["kwargs"])
                 result = (res, True)
-        except Exception as e:
-            # Minor QoL, parse the exception chain as far as
-            # possible to check if this was a timeout or just an error
-            exception_chain = [e]
-            next_exception = e.__cause__
-            while next_exception is not None:
-                exception_chain.append(next_exception)
-                next_exception = next_exception.__cause__
-            if any(isinstance(x, JobTimeoutException) for x in exception_chain):
-                timed_out = True
+        except (JobTimeoutException, Exception) as e:
             result = (f"{e} : {traceback.format_exc()}", False)
+            if isinstance(e, JobTimeoutException):
+                timed_out = True
             if error_reporter:
                 error_reporter.report()
             if task.get("sync", False):

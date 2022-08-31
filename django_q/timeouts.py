@@ -5,9 +5,10 @@ Borrowed from rq: https://github.com/rq/rq/blob/master/rq/timeouts.py
 import signal
 
 
-class JobTimeoutException(Exception):
+class JobTimeoutException(SystemExit):
     """Raised when a job takes longer to complete than the allowed maximum
-    timeout value.
+    timeout value.  Inherits from SystemExit to prevent user code which catches
+    Exception from not timing out correctly.
     """
     pass
 
