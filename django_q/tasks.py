@@ -15,7 +15,6 @@ from django_q.models import Schedule, Task
 from django_q.queues import Queue
 from django_q.signals import pre_enqueue
 from django_q.signing import SignedPackage
-from django_q.cluster import WorkerStatus
 
 
 def async_task(func, *args, **kwargs):
@@ -757,6 +756,7 @@ class AsyncTask:
 def _sync(pack):
     """Simulate a package travelling through the cluster."""
     from django_q.cluster import monitor, worker
+    from django_q.cluster import WorkerStatus
 
     task_queue = Queue()
     result_queue = Queue()
