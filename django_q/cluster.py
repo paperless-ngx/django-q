@@ -299,7 +299,6 @@ class Sentinel:
                 scheduler(broker=self.broker)
             # Save current status
             Stat(self).save()
-            sleep(cycle)
         self.stop()
 
     def stop(self):
