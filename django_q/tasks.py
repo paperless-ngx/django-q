@@ -756,13 +756,14 @@ class AsyncTask:
 def _sync(pack):
     """Simulate a package travelling through the cluster."""
     from django_q.cluster import monitor, worker
+    from django_q.cluster import WorkerStatus
 
     task_queue = Queue()
     result_queue = Queue()
     task = SignedPackage.loads(pack)
     task_queue.put(task)
     task_queue.put("STOP")
-    worker(task_queue, result_queue, Value("f", -1))
+    worker(task_queue, result_queue, Value("I", WorkerStatus.IDLE.value))
     result_queue.put("STOP")
     monitor(result_queue)
     task_queue.close()

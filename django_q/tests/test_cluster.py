@@ -14,7 +14,7 @@ myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + "/../")
 
 from django_q.brokers import Broker, get_broker
-from django_q.cluster import Cluster, Sentinel, monitor, pusher, save_task, worker
+from django_q.cluster import Cluster, Sentinel, monitor, pusher, save_task, worker, WorkerStatus
 from django_q.conf import Conf
 from django_q.humanhash import DEFAULT_WORDLIST, uuid
 from django_q.models import Success, Task
@@ -124,7 +124,7 @@ def test_cluster(broker):
     assert queue_size(broker=broker) == 0
     # Test work
     task_queue.put("STOP")
-    worker(task_queue, result_queue, Value("f", -1))
+    worker(task_queue, result_queue, Value("I", WorkerStatus.IDLE.value))
     assert task_queue.qsize() == 0
     assert result_queue.qsize() == 1
     # Test monitor
@@ -227,7 +227,7 @@ def test_enqueue(broker, admin_user):
     assert fetch_group("test_j", count=2, wait=10) is None
     # let a worker handle them
     result_queue = Queue()
-    worker(task_queue, result_queue, Value("f", -1))
+    worker(task_queue, result_queue, Value("I", WorkerStatus.IDLE.value))
     assert result_queue.qsize() == task_count
     result_queue.put("STOP")
     # store the results
@@ -437,7 +437,7 @@ def test_recycle(broker, monkeypatch):
     pusher(task_queue, stop_event, broker=broker)
     pusher(task_queue, stop_event, broker=broker)
     # worker should exit on recycle
-    worker(task_queue, result_queue, Value("f", -1))
+    worker(task_queue, result_queue, Value("I", WorkerStatus.IDLE.value))
     # check if the work has been done
     assert result_queue.qsize() == 2
     # save_limit test
@@ -472,7 +472,7 @@ def test_max_rss(broker, monkeypatch):
     # push the task
     pusher(task_queue, stop_event, broker=broker)
     # worker should exit on recycle
-    worker(task_queue, result_queue, Value("f", -1))
+    worker(task_queue, result_queue, Value("I", WorkerStatus.IDLE.value))
     # check if the work has been done
     assert result_queue.qsize() == 1
     # save_limit test
@@ -508,7 +508,7 @@ def test_bad_secret(broker, monkeypatch):
     worker(
         task_queue,
         result_queue,
-        Value("f", -1),
+        Value("I", WorkerStatus.IDLE.value),
     )
     assert result_queue.qsize() == 0
     broker.delete_queue()
@@ -693,7 +693,7 @@ class TestSignals:
         event.set()
         pusher(task_queue, event, broker=broker)
         task_queue.put("STOP")
-        worker(task_queue, result_queue, Value("f", -1))
+        worker(task_queue, result_queue, Value("I", WorkerStatus.IDLE.value))
         result_queue.put("STOP")
         monitor(result_queue, broker)
         broker.delete_queue()
@@ -722,7 +722,7 @@ class TestSignals:
         event.set()
         pusher(task_queue, event, broker=broker)
         task_queue.put("STOP")
-        worker(task_queue, result_queue, Value("f", -1))
+        worker(task_queue, result_queue, Value("I", WorkerStatus.IDLE.value))
         result_queue.put("STOP")
         monitor(result_queue, broker)
         broker.delete_queue()
