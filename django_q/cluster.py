@@ -2,6 +2,7 @@
 import ast
 import enum
 import inspect
+import multiprocessing
 import pydoc
 import signal
 import socket
@@ -9,6 +10,7 @@ import traceback
 import uuid
 from datetime import datetime
 from multiprocessing import Event, Process, Value, current_process
+import multiprocessing.connection
 from time import sleep
 
 # External
@@ -282,19 +284,21 @@ class Sentinel:
         cycle = Conf.GUARD_CYCLE  # guard loop sleep in seconds
         # Guard loop. Runs at least once
         while not self.stop_event.is_set() or not counter:
-            # Check Workers
-            for p in self.pool:
-                with p.status.get_lock():
-                    # Are you alive?
-                    if not p.is_alive() or p.status.value in {WorkerStatus.TIMEOUT.value, WorkerStatus.RECYCLE.value}:
-                        self.reincarnate(p)
-                        continue
-            # Check Monitor
-            if not self.monitor.is_alive():
-                self.reincarnate(self.monitor)
-            # Check Pusher
-            if not self.pusher.is_alive():
-                self.reincarnate(self.pusher)
+            # Build a mapping from a Process.sentinel to the process
+            sentinels = {
+                self.monitor.sentinel : self.monitor,
+                self.pusher.sentinel : self.monitor
+            }
+            for worker in self.pool:
+                sentinels[worker.sentinel] = worker
+
+            # Wait for any one of the sentinels to be "ready", indicating the process has
+            # ended
+            ready_sentinels = multiprocessing.connection.wait(sentinels.keys(), timeout=cycle)
+
+            # Handle tasks for any ready sentinels, meaning the process needs to be spawned again
+            for process_sentinel in ready_sentinels:
+                self.reincarnate(sentinels[process_sentinel])
             # Call scheduler once a minute (or so)
             counter += cycle
             if counter >= 30 and Conf.SCHEDULER:
@@ -302,7 +306,6 @@ class Sentinel:
                 scheduler(broker=self.broker)
             # Save current status
             Stat(self).save()
-            sleep(cycle)
         self.stop()
 
     def stop(self):
